@@ -1,0 +1,261 @@
+#!/bin/bash
+# Dosyalar ve Dizinlerle İlgili İşlemler
+menu()
+{
+	echo -e "\e[1;35;40m  <<<<< Dosyalar ve Dizinlerle İlgili İşlemler >>>>> Ver. 1.0 <<<<< SİNAN ÇAKIR <<<<< \e[0m"
+	echo -e "\e[1;33;40m  1  -> Dosya Arama \e[0m"
+        echo -e "\e[1;33;40m  2  -> Bütün Dizinlerde Uzantıya Göre Arama Yapma \e[0m"
+        echo -e "\e[1;33;40m  3  -> Büyüklüge Göre Dosya Arama \e[0m"
+        echo -e "\e[1;33;40m  4  -> Dosya Sıralama \e[0m"
+	echo -e "\e[1;33;40m  5  -> Dosyadan Kelime Degiştirme \n\e[0m" 	
+        echo -e "\e[1;34;40m  6  -> Dosya Silme \e[0m"
+	echo -e "\e[1;34;40m  7  -> Boyutu En Büyük Dizinleri Görüntüleme \e[0m"
+        echo -e "\e[1;34;40m  8  -> Dosyaları Büyük Harflere Dönüştürüp Görüntüleme \e[0m"
+        echo -e "\e[1;34;40m  9  -> Dosyaları Küçük Harflere Dönüştürüp Görüntüleme\e[0m"
+        echo -e "\e[1;34;40m  10 -> Dosyayı İstenilen Parçalara Bölme \n\e[0m"
+        echo -e "\e[1;33;40m  11 -> Dosyanın Tarihini Degiştirme\e[0m"
+	echo -e "\e[1;33;40m  12 -> Ekranı Temizle \e[0m"
+	echo -e "\e[1;33;40m  13 -> Bulundugum Dizin \e[0m"
+	echo -e "\e[1;33;40m  14 -> Dizin Degiştirme \e[0m"
+        echo -e "\e[1;33;40m  15 -> Ajanda \n\e[0m"
+	echo -e "\e[1;34;40m  16 -> Tarih \e[0m"
+        echo -e "\e[1;34;40m  17 -> Sistemdeki Kişileri Görüntüle \e[0m"
+	echo -e "\e[1;34;40m  18 -> Dosya Şifreleme \e[0m"	
+	echo -e "\e[1;34;40m  19 -> Dosya DeŞifreleme \e[0m"  
+	echo -e "\e[1;31;40m  20 -> ÇIKIŞ \e[0m"
+}
+
+dizineGit()
+{
+echo -n "Hangi Dizine Gideceksiniz : "
+read dizin
+        if [ -d $dizin ]
+        then
+        cd $dizin
+        echo Buradasınız : `pwd`
+        else
+        echo "Böyle Bir Dizin Yok. Üzgünüm :("
+	echo "Tekrar Giriş Yapmak İstiyormusunuz (e/h)"
+	read cevap
+		if [ "$cevap" = e ]
+		then
+		dizineGit
+		else
+		exit
+		fi
+	fi
+}
+
+a=0
+while [ a=0 ]
+do
+menu
+echo -n "Seçeneginizi girin : "
+read val
+case $val in
+1)
+dizineGit
+echo -n "Aratacagınız Dosyanın Uzantısını Yazın. Örnek txt, png, log : "
+read dosya
+echo "Bulunan Dosya(lar) : `find -name *.$dosya -print`"
+;;
+2)
+echo -n "Aratacagınız Dosyanın Uzantısını Yazın. Örnek txt, png, log : "
+read dizin
+find / -name "*.$dizin"
+;;
+3)
+echo " Dosya boyutunu MB cinsinden giriniz "
+echo " Örnek 100 MB'dan büyük ise -> +100M "
+echo "       100 MB'dan küçük ise -> -100M "
+echo "       GB cinsinden aramak için 1G "
+echo -n "Girişiniz : "
+read boyut
+find / -size $boyut
+;;
+4)
+dizineGit
+echo "Büyüklüge Göre Sıralamak İçin -> size"
+echo "Son Degiştirilme Tarihine Göre Sıralamak İçin -> time Yazın"
+read sort
+ls -la --sort=$sort |less
+;;
+5)
+dizineGit
+echo -n "Dosya İsmini Girin. Örnek : abcd.txt : "
+read file
+if [ -f $file ]
+then
+view $file
+echo -n "Degiştirmek İstediginiz Kelime : "
+read degis
+echo -n "Hangi Kelimeye Degiştirilecek : "
+read degistir
+sed -i s/$degis/$degistir/g $file
+view $file
+else
+echo "Böyle Bir Dosya Yok. Üzgünüm :("
+fi
+;;
+6)
+dizineGit
+echo -n "Dosya İsmini Girin. Örnek : abcd.txt : "
+read file
+if [ -f $file ]
+then
+rm -f $file 
+echo "Dosya Silindi"
+ls -l
+else
+echo "Böyle Bir Dosya Yok. Üzgünüm :("
+fi
+;;
+7)
+echo -n "Hangi Dizine Gideceksiniz : "
+read dizin
+if [ -d $dizin ]
+then
+echo "Kaç Tane Görüntülemek İstersin"
+read kac
+du /$dizin | sort -rn | head -$kac
+else
+echo "Böyle Bir Dizin Yok. Üzgünüm :("
+exit
+fi
+;;
+8)
+echo -n "Hangi Dizine Gideceksiniz : "
+read dizin
+if [ -d $dizin ]
+then
+find $dizin | tr "[:lower:]" "[:upper:]"
+else
+echo "Böyle Bir Dizin Yok. Üzgünüm :("
+fi
+;;
+9)
+echo -n "Hangi Dizine Gideceksiniz : "
+read dizin
+if [ -d $dizin ]
+then
+find $dizin | tr "[:upper:]" "[:lower:]"
+else
+echo "Böyle Bir Dizin Yok. Üzgünüm :("
+fi
+;;
+10)
+dizineGit
+echo -n "Dosya İsmini Girin. Örnek : abcd.txt : "
+read file
+if [ -f $file ]
+then
+echo "Kaç Satıra Bölmek İstersin : "
+read bol
+split -l $bol $file $file 
+echo "Dosya Bölündü"
+ls -l 
+else
+echo "Belirttiginiz Dosya Maalesef Bulunamadı :("
+fi
+;;
+11)
+dizineGit
+echo -n "Dosya İsmini Girin. Örnek : abcd.txt : "
+read file
+if [ -f $file ]
+then
+echo "Degiştirmek İstediginiz Tarihi Girin"
+echo "Örnek : 0301050101 -> 2003-01-05 01:01"
+read tarih
+touch -t $tarih $file
+echo $file dosyasının bilgileri : `ls -l $file`
+else
+echo "Belirttiginiz Dosya Maalesef Bulunamadı :("
+fi
+;;
+12)
+clear
+;;
+13)
+echo Buradasınız : `pwd`
+;;
+14)
+dizineGit
+;;
+15)
+cal
+;;
+16)
+date
+;;
+17)
+who
+;;
+18)
+yol=/usr/bin/crypt 
+if [ -f "$yol" ] 
+then 
+echo "Lütfen Bekleyiniz"
+sleep 2 
+echo "Crypt Sisteminizde Yüklü Bulundu" 
+sleep 0.4 
+echo "Lütfen Şifrelemek İstediginiz Dosyanin Tam Yolunu Giriniz" 
+echo "Örnek: /home/arellab/dosya.txt " 
+read dosyayol 
+sleep 0.4 
+if [ -f "$dosyayol" ]
+then 
+echo "Dosya Dogrulandı" 
+else 
+echo "$dosyayol Bulunamadı" 
+exit  
+fi 
+sleep 0.4 
+echo "Lütfen Şifrenizi Giriniz:" 
+read sifre 
+sleep 0.4 
+cat $dosyayol | $yol $sifre > crypted 
+echo "Dosyanız Şifrelendi `pwd` Dizininde crypted Adıyla Yer Alıyor." 
+else 
+echo "crypt Sisteminizde Bulunamadı" 
+exit  
+fi 
+;;
+19)
+yol=/usr/bin/crypt 
+if [ -f "$yol" ] 
+then 
+echo "Lütfen bekleyiniz." 
+sleep 2 
+echo "Crypt Sisteminizde Yüklü Bulundu" 
+sleep 0.4 
+echo "Lütfen Açmak İstediginiz Dosyanin Tam Yolunu Giriniz" 
+echo "Örnek: /home/arellab/dosya.txt " 
+read dosyayol 
+sleep 0.4 
+if [ -f "$dosyayol" ]
+then 
+echo "Dosya Dogrulandı" 
+else 
+echo "$dosyayol Bulunamadı" 
+exit  
+fi 
+sleep 0.4 
+echo "Dosyayı Şifrelerken Girdiginiz Parolayi Giriniz:" 
+read sifre 
+sleep 0.4 
+$yol $sifre < $dosyayol > decrypted 
+echo "İşlem Tamam. Açılan Dosya `pwd` Dizininde decrypted Adıyla Yer Alıyor." 
+else 
+echo "crypt Sisteminizde Bulunamadı" 
+exit  
+fi 
+;;
+20)
+exit
+;;
+*)
+echo -e "\e[1;31;40m!!!!!  Hatalı Bir Giriş Yaptınız. Lütfen Tekrar Girin !!!!! \e[0m"
+;;
+esac
+done
